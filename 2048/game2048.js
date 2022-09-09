@@ -4,21 +4,9 @@ import {print_grid, new_grid, insert_new, generate_new, get_random_empty_positio
 
 
 
-let IsNewInput = false;
-let NewInput = UP; //default up, but will be changed and only used with user input.
-
 // gridObj.grid = [[0, 2, 4, 8], [16, 32, 64, 128], [256, 512, 1024, 2048], [4096, 8192, 16384, 32768]];
 // gridObj.grid_t = transpose(gridObj.grid);
 
-
-document.body.addEventListener('keydown',inputToLetter);
-
-function inputToLetter(event){
-    if (event.keyCode >= 37 && event.keyCode <= 40) {
-        NewInput = event.keyCode
-        IsNewInput = true
-    }
-}
 
 function CanvasPrintGrid(gridt, size) {
     console.log(size);
@@ -85,7 +73,7 @@ window.addEventListener('load', ()=> {
 
 
 
-        
+
         function main() {
             if (IsNewInput) {
                 if (gridObj.set_move(NewInput) == false) {
@@ -112,3 +100,28 @@ window.addEventListener('load', ()=> {
 
 
 })
+
+
+document.body.addEventListener('keydown', (event) => {
+    if (event.keyCode >= 37 && event.keyCode <= 40) {
+        let NewInput = event.keyCode;
+
+        if (gridObj.set_move(NewInput) == false) {
+            // set_move will always try make a change to the grid.
+            console.log("Input did not change game");
+        } else {
+            gridObj.set_new();
+            if (gridObj.is_game_over()) {
+                print_grid(gridObj.grid)
+                CanvasPrintGrid(gridObj.grid, size);
+                console.log("game over")  
+                alert("Game over.");           
+                return 0
+                // finish this function, game is over.
+            }
+        }
+
+        gridObj.print();
+        CanvasPrintGrid(gridObj.grid, size);
+    } 
+});
