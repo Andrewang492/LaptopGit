@@ -1,5 +1,3 @@
-const size = 4;
-
 // up down left right 
 // 38  40   37   39
 const UP = 38
@@ -7,7 +5,7 @@ const DOWN = 40
 const LEFT = 37
 const RIGHT = 39
 
-function new_grid () {
+function new_grid (size) {
     let grid = [];
 
     for (let i = 0;i < size ;i++ ) {
@@ -28,8 +26,8 @@ function print_grid (grid) {
     let outputstring = '';
     while (true) {
         //print
-        for (let i = 0; i < size; i++){
-            for (let j = 0; j < size; j++) {
+        for (let i = 0; i < grid.length; i++){
+            for (let j = 0; j < grid.length; j++) {
                 outputstring += `${grid[i][j]} `;
             }
             outputstring += '\n';
@@ -51,8 +49,8 @@ function generate_new() {
 
 function get_random_empty_position(grid) {
     let possible_coords = [];
-    for (let i = 0;i < size ;i++ ) {
-        for (let j = 0;j < size ;j++ ) {
+    for (let i = 0;i < grid.length ;i++ ) {
+        for (let j = 0;j < grid.length ;j++ ) {
             if (grid[i][j] == 0) {
                 possible_coords.push([i,j]);
             }
@@ -143,10 +141,9 @@ function check_digits(grid) {
         let rowmax = Math.max.apply(Math, grid[i])
         if (rowmax > maxi) {
             maxi = rowmax;
-            console.log(maxi)
         }
     }
-    return Math.floor(Math.log10(maxi))
+    return Math.floor(Math.log10(maxi)) + 1
 }
 
 function AreGridsEqual(grid1, grid2) {
@@ -161,28 +158,31 @@ function AreGridsEqual(grid1, grid2) {
 }
 
 class gridclass {
-    constructor() {
-        this.grid = new_grid();
+    constructor(size) {
+        this.grid = new_grid(size);
         this.grid_t = transpose(this.grid);
-        this.digits = 1
+        this.digits = 1;
+        this.size = size;
     }
 
     print() {
         //print_grid(this.grid);
-        let out = ''
-        const digits = this.digits
-        for (let row = 0; row < this.grid.length; row++) {
-            for (let i = 0; i < this.grid.length; i++) {
-                if (row[i] == 0) {
-                    out.concat( " ".padStart(digits, " "));
+        let out = '';
+        const digits = this.digits + 1;
+        const grid = this.grid;
+        for (let row = 0; row < grid.length; row++) {
+            for (let i = 0; i < grid.length; i++) {
+                const rowInstance = grid[row];
+                if (rowInstance[i] == 0) {
+                    out = out.concat( "_".padStart(digits, " "));
                 } else {
-                    out.concat( String(row[i]).padStart(digits, " "));
+                    out = out.concat( String(rowInstance[i]).padStart(digits, " "));
                 }
             }
-            out.concat("\n");
+            out = out.concat("\n");
         }
         console.log(out);
-        return out
+        return;
     }
 
     set_new() {
@@ -214,6 +214,7 @@ class gridclass {
                 return false;
         }
         
+        this.digits = check_digits(this.grid);
         return !AreGridsEqual(start_grid, this.grid);    // if grids are equal, return false - can't move. 
     }
     // return false if cant do it - because of input, or because no effect.
@@ -234,6 +235,6 @@ class gridclass {
   }; 
 
 
-export {size, new_grid, print_grid, insert_new, generate_new, get_random_empty_position,
+export {new_grid, print_grid, insert_new, generate_new, get_random_empty_position,
     condense_left, shift_left, shift_right, has_adjacents, transpose, check_digits, gridclass,
     UP, DOWN, LEFT, RIGHT}
