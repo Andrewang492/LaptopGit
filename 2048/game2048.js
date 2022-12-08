@@ -59,10 +59,10 @@ window.addEventListener('load', ()=> {
     CanvasPrintGrid(gridObj.grid, size);
     console.log("Loading default grid");
 
-    form.addEventListener("Changing size", (e) => {
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
         console.log("Loading new grid");
 
-        e.preventDefault();
         const task = input.value;
     
         if(!task) {
