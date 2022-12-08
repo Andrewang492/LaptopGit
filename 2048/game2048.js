@@ -28,6 +28,7 @@ function CanvasPrintGrid(gridt, size) {
     for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
             const value = grid[i][j];
+            console.log(typeof(value) == "undefined");
             if (value != 0) {
                 const fontsize = radiusSize / 2^(Math.ceil(Math.log10(value)));
                 ctx.font = fontsize.toString().concat("px Segoe UI");
@@ -50,12 +51,17 @@ const Colours = ["Azure", "AliceBlue", "LightBlue","DeepSkyBlue", "Blue", "DarkS
 //-------------------------------------
 
 window.addEventListener('load', ()=> {
-
     const form = document.querySelector("#new-task-form");
     const input = document.querySelector("#new-task-input");
-    let size = 4;
+    let size = 3;
+    let gridObj = new gridclass(size); //default 4.
+    gridObj.print();
+    CanvasPrintGrid(gridObj.grid, size);
+    console.log("Loading default grid");
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener("Changing size", (e) => {
+        console.log("Loading new grid");
+
         e.preventDefault();
         const task = input.value;
     
@@ -65,63 +71,39 @@ window.addEventListener('load', ()=> {
         }
         size = parseInt(task);
         
-        let gridObj = new gridclass(size);
-        gridObj.print();
-        CanvasPrintGrid(gridObj.grid, size); 
-        main(); 
-
-
-
-
-
-        function main() {
-            if (IsNewInput) {
-                if (gridObj.set_move(NewInput) == false) {
-                    console.log("Input did not change game");
-                } else {
-                    gridObj.set_new();
-                    if (gridObj.is_game_over()) {
-                        print_grid(gridObj.grid)
-                        CanvasPrintGrid(gridObj.grid, size);
-                        console.log("game over")  
-                        alert("Game over.");           
-                        return 0
-                        // finish this function, game is over.
-                    }
-                }
-                gridObj.print();
-                CanvasPrintGrid(gridObj.grid, size);
-            }
-            IsNewInput = false;
-            setTimeout(main, 1000/10); //update 10 times a second.
-            return;
-        } 
-    })
-
-
-})
-
-
-document.body.addEventListener('keydown', (event) => {
-    if (event.keyCode >= 37 && event.keyCode <= 40) {
-        let NewInput = event.keyCode;
-
-        if (gridObj.set_move(NewInput) == false) {
-            // set_move will always try make a change to the grid.
-            console.log("Input did not change game");
-        } else {
-            gridObj.set_new();
-            if (gridObj.is_game_over()) {
-                print_grid(gridObj.grid)
-                CanvasPrintGrid(gridObj.grid, size);
-                console.log("game over")  
-                alert("Game over.");           
-                return 0
-                // finish this function, game is over.
-            }
-        }
-
+        gridObj = new gridclass(size);
         gridObj.print();
         CanvasPrintGrid(gridObj.grid, size);
-    } 
-});
+    })
+        
+
+    // Functions _____________________
+    const keydownAction = function (event) {
+        if (event.keyCode >= 37 && event.keyCode <= 40) {
+            let NewInput = event.keyCode;
+    
+            if (gridObj.set_move(NewInput) == false) {
+                // set_move will always try make a change to the grid.
+                console.log("Input did not change game");
+            } else {
+                gridObj.set_new();
+                if (gridObj.is_game_over()) {
+                    print_grid(gridObj.grid)
+                    gridObj.print();
+                    CanvasPrintGrid(gridObj.grid, size);
+                    console.log("game over")  
+                    alert("Game over.");           
+                    return 0
+                    // finish this function, game is over.
+                }
+            }
+            console.log(`real grid size: ${gridObj.grid.length}`);
+            gridObj.print();
+            CanvasPrintGrid(gridObj.grid, size);
+        } 
+    }
+
+    document.body.addEventListener('keydown', keydownAction);
+    // document.body.removeEventListener('keydown', keydownAction);
+
+})
